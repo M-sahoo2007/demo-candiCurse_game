@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CandyVerse</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="navbar glass">
+            <div class="logo">CandyVerse</div>
+            <nav class="main-nav">
+                <a href="/">Home</a>
+                <a href="/game/">Play</a>
+                <a href="/leaderboard/">Leaderboard</a>
+                {% if user.is_authenticated %}
+                    <a href="/profile/">Profile</a>
+                    <a href="/logout/">Logout</a>
+                {% else %}
+                    <a href="/login/">Login</a>
+                    <a href="/register/">Register</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main>
+            {% if messages %}
+                <div class="toast-message-container">
+                    {% for message in messages %}
+                        <div class="toast-message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer glass">
+            <p>© 2026 CandyVerse. Match, blast, and conquer the sweetest universe.</p>
+        </footer>
+    </div>
+    <script src="/static/js/scripts.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

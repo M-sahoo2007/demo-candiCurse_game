@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <span class="eyebrow">CandyVerse</span>
+        <h1>Sweet Match-3 Adventure Awaits</h1>
+        <p>Play a stunning browser-powered candy game with levels, combos, special candies and global leaderboards.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="/game/">Play Now</a>
+            <a class="btn btn-secondary" href="/register/">Join Free</a>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <div class="floating-candy candy-1"></div>
+        <div class="floating-candy candy-2"></div>
+        <div class="floating-candy candy-3"></div>
+        <div class="feature-card glass">
+            <h2>Fast gameplay</h2>
+            <p>Drag, swap, match and trigger candy explosions with neon visuals and smooth animations.</p>
+        </div>
+    </div>
+</section>
+<section class="features section-grid">
+    <article class="feature-card glass">
+        <h3>Match 3 logic</h3>
+        <p>8x8 board, special candies, combo streaks and level mastery.</p>
+    </article>
+    <article class="feature-card glass">
+        <h3>Leaderboard</h3>
+        <p>Save scores, track rankings and show off your candy skills.</p>
+    </article>
+    <article class="feature-card glass">
+        <h3>Responsive play</h3>
+        <p>Mobile touch support, smooth transitions and polished UI for all devices.</p>
+    </article>
+</section>
+{% endblock %}

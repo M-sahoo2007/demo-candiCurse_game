@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="auth-shell glass">
+    <div class="auth-card">
+        <h2>Login to CandyVerse</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <label>
+                <span>Username</span>
+                <input type="text" name="username" required />
+            </label>
+            <label>
+                <span>Password</span>
+                <input type="password" name="password" required />
+            </label>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <p>New here? <a href="/register/">Create an account</a></p>
+    </div>
+</section>
+{% endblock %}

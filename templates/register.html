@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="auth-shell glass">
+    <div class="auth-card">
+        <h2>Create your account</h2>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <label>
+                <span>Username</span>
+                <input type="text" name="username" required />
+            </label>
+            <label>
+                <span>Email</span>
+                <input type="email" name="email" required />
+            </label>
+            <label>
+                <span>Password</span>
+                <input type="password" name="password1" required />
+            </label>
+            <label>
+                <span>Confirm Password</span>
+                <input type="password" name="password2" required />
+            </label>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+        <p>Already have an account? <a href="/login/">Login</a></p>
+    </div>
+</section>
+{% endblock %}

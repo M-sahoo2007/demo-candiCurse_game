@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="profile-shell glass">
+    <div class="profile-card">
+        <h2>{{ user_profile.username }}'s Profile</h2>
+        <div class="profile-grid">
+            <div class="profile-detail">
+                <span>Email</span>
+                <strong>{{ user_profile.email }}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Total Score</span>
+                <strong>{{ user_profile.total_score }}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Best Score</span>
+                <strong>{{ user_profile.best_score }}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Leaderboard Rank</span>
+                <strong>{% if user_profile.leaderboard_rank %}#{{ user_profile.leaderboard_rank }}{% else %}Unranked{% endif %}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Games Played</span>
+                <strong>{{ user_profile.games_played }}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Highest Level</span>
+                <strong>{{ user_profile.highest_level }}</strong>
+            </div>
+            <div class="profile-detail">
+                <span>Joined</span>
+                <strong>{{ user_profile.date_joined|date:'F j, Y' }}</strong>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

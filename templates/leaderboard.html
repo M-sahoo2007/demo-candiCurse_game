@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="leaderboard-shell glass">
+    <h2>Top CandyVerse Players</h2>
+    <div class="leaderboard-table glass">
+        <div class="leaderboard-row header">
+            <span>Rank</span>
+            <span>Player</span>
+            <span>Best Score</span>
+            <span>Total Score</span>
+            <span>Level</span>
+            <span>Games</span>
+            <span>Joined</span>
+        </div>
+        {% for leader in leaders %}
+        <div class="leaderboard-row{% if leader.is_self %} active-player{% endif %}">
+            <span>{{ leader.rank }}</span>
+            <span>{{ leader.username }}{% if leader.is_self %} (You){% endif %}</span>
+            <span>{{ leader.highest_score }}</span>
+            <span>{{ leader.total_score }}</span>
+            <span>{{ leader.highest_level }}</span>
+            <span>{{ leader.games_played }}</span>
+            <span>{{ leader.joined|date:'M d, Y' }}</span>
+        </div>
+        {% empty %}
+        <p>No players have registered or played yet. Be the first to join CandyVerse!</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

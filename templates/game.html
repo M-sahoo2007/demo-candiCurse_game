@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="game-shell">
+    <aside class="game-sidebar glass">
+        <div class="stats-card">
+            <h3>Player</h3>
+            <p>{{ username }}</p>
+        </div>
+        <div class="stats-card">
+            <h3>Current Score</h3>
+            <p id="scoreValue">0</p>
+        </div>
+        <div class="stats-card">
+            <h3>Lifetime Score</h3>
+            <p id="lifetimeScoreValue">{{ total_score }}</p>
+        </div>
+        <div class="stats-card">
+            <h3>Best Score</h3>
+            <p id="bestScoreValue">{{ best_score }}</p>
+        </div>
+        <div class="stats-card">
+            <h3>Leaderboard Rank</h3>
+            <p id="leaderboardRankValue">{% if leaderboard_rank %}#{{ leaderboard_rank }}{% else %}Unranked{% endif %}</p>
+        </div>
+        <div class="stats-card">
+            <h3>Level</h3>
+            <p id="levelValue">1</p>
+        </div>
+        <div class="stats-card">
+            <h3>Moves</h3>
+            <p id="movesLeftValue">30</p>
+        </div>
+        <div class="stats-card">
+            <h3>Timer</h3>
+            <p id="timerValue">02:00</p>
+        </div>
+        <div class="sidebar-actions">
+            <button id="pauseButton" class="btn btn-secondary">Pause</button>
+            <button id="restartButton" class="btn btn-secondary">Restart</button>
+        </div>
+    </aside>
+    <section class="game-board-shell">
+        <div class="game-header glass">
+            <div>
+                <span class="label">Match 3 Candyverse</span>
+                <p>Drag candies to match colors and trigger combos.</p>
+            </div>
+            <button id="toggleSound" class="btn btn-primary">Sound On</button>
+        </div>
+        <div class="board glass" id="gameBoard"></div>
+        <div class="board-footer glass">
+            <button id="leaderboardPopup" class="btn btn-secondary">Leaderboard</button>
+            <div class="progress-summary">
+                <div class="progress-block">
+                    <span>Special Candy</span>
+                    <strong id="specialInfo">Bomb, Rainbow, Line, Color</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="gameData" data-username="{{ username }}" class="hidden"></div>
+<div class="modal hidden" id="pauseModal">
+    <div class="modal-panel glass">
+        <h3>Game Paused</h3>
+        <p>Your match is paused. Resume when ready.</p>
+        <button id="resumeButton" class="btn btn-primary">Resume</button>
+    </div>
+</div>
+<div class="toast hidden" id="toastMessage"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/game.js"></script>
+{% endblock %}
