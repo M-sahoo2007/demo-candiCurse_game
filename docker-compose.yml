@@ -1,29 +1,30 @@
-version: '3.9'
-services:
-  web:
-    build: .
-    command: gunicorn candyverse.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - '8000:8000'
-    env_file:
-      - .env
-    volumes:
-      - .:/app
-      - static_volume:/app/staticfiles
-      - media_volume:/app/media
-    depends_on:
-      - db
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: candyverse
-      POSTGRES_USER: candyverse
-      POSTGRES_PASSWORD: candyversepass
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
+name: Django CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8, 3.9, "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Tests
+      run: |
+        python manage.py test
