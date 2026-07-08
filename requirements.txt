@@ -9,4 +9,7 @@ Pillow>=10.0
 gunicorn>=22.0
 whitenoise>=6.6
 pip-audit
+celery>=5.3
+redis>=4.0
+django-celery-beat>=3.3
 
