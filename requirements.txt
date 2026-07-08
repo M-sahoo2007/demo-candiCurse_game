@@ -13,5 +13,5 @@ celery>=5.3
 redis>=4.0
 # pin django-celery-beat to a compatible release
 # django-celery-beat>=2.9
-django-celery-beat>=2.5.0
+django-celery-beat>=2.9.0
 
