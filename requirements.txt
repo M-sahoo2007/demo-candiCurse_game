@@ -11,5 +11,7 @@ whitenoise>=6.6
 pip-audit
 celery>=5.3
 redis>=4.0
-django-celery-beat>=3.3
+# pin django-celery-beat to a compatible release
+# django-celery-beat>=2.9
+django-celery-beat>=2.5.0
 
