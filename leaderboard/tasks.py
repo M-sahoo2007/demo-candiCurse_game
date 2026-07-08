@@ -1,6 +1,9 @@
 from celery import shared_task
 from django.db import transaction
 from .models import Leaderboard
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @shared_task
@@ -29,4 +32,5 @@ def recalculate_ranks(batch_size=1000):
         if to_update:
             Leaderboard.objects.bulk_update(to_update, ['rank'])
             updated += len(to_update)
+    logger.info('Recalculated leaderboard ranks; updated=%d', updated)
     return {'updated': updated}

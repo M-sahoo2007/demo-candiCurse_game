@@ -8,6 +8,7 @@ from game.models import GameScore
 from leaderboard.models import Leaderboard
 from .serializers import ScoreSerializer, LeaderboardSerializer, GameHistorySerializer
 from django.db import transaction
+from leaderboard.tasks import recalculate_ranks
 
 
 def get_tokens_for_user(user):
@@ -89,6 +90,12 @@ def save_score_api(request):
                 leaderboard.save(update_fields=['highest_score', 'rank'])
             else:
                 rank = leaderboard.rank
+            # enqueue background rank recalculation to keep ranks consistent
+            try:
+                recalculate_ranks.delay()
+            except Exception:
+                # avoid failing the request if Celery isn't available
+                pass
         return Response({
             'message': 'Score saved successfully.',
             'total_score': getattr(request.user, 'total_score', 0),
