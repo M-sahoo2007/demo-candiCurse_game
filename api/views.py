@@ -7,6 +7,7 @@ from users.serializers import RegisterSerializer, ProfileSerializer
 from game.models import GameScore
 from leaderboard.models import Leaderboard
 from .serializers import ScoreSerializer, LeaderboardSerializer, GameHistorySerializer
+from django.db import transaction
 
 
 def get_tokens_for_user(user):
@@ -53,25 +54,44 @@ def profile_api(request):
 def save_score_api(request):
     serializer = ScoreSerializer(data=request.data)
     if serializer.is_valid():
-        GameScore.objects.create(
-            user=request.user,
-            score=serializer.validated_data['score'],
-            level=serializer.validated_data['level'],
-            moves_used=serializer.validated_data.get('moves_used', 0),
-            mode=serializer.validated_data.get('mode', 'moves'),
-        )
-        request.user.total_score += serializer.validated_data['score']
-        request.user.highest_level = max(request.user.highest_level, serializer.validated_data['level'])
-        request.user.save()
-        leaderboard, _ = Leaderboard.objects.get_or_create(user=request.user)
-        leaderboard.highest_score = max(leaderboard.highest_score, serializer.validated_data['score'])
-        leaderboard.save()
-        rank = Leaderboard.objects.filter(highest_score__gt=leaderboard.highest_score).count() + 1
-        leaderboard.rank = rank
-        leaderboard.save(update_fields=['rank'])
+        score_val = serializer.validated_data['score']
+        level_val = serializer.validated_data['level']
+        # Use a transaction and select_for_update to avoid race conditions and reduce writes.
+        with transaction.atomic():
+            GameScore.objects.create(
+                user=request.user,
+                score=score_val,
+                level=level_val,
+                moves_used=serializer.validated_data.get('moves_used', 0),
+                mode=serializer.validated_data.get('mode', 'moves'),
+            )
+            # Update user aggregates in memory and save once if changed.
+            user_updated_fields = []
+            new_total = getattr(request.user, 'total_score', 0) + score_val
+            if new_total != getattr(request.user, 'total_score', 0):
+                request.user.total_score = new_total
+                user_updated_fields.append('total_score')
+            new_highest_level = max(getattr(request.user, 'highest_level', 0), level_val)
+            if new_highest_level != getattr(request.user, 'highest_level', 0):
+                request.user.highest_level = new_highest_level
+                user_updated_fields.append('highest_level')
+            if user_updated_fields:
+                request.user.save(update_fields=user_updated_fields)
+
+            leaderboard, _ = Leaderboard.objects.select_for_update().get_or_create(user=request.user, defaults={'highest_score': 0, 'rank': 0})
+            old_high = leaderboard.highest_score
+            new_high = max(old_high, score_val)
+            if new_high != old_high:
+                leaderboard.highest_score = new_high
+                # compute rank (this is O(n); consider offloading to background job for large datasets)
+                rank = Leaderboard.objects.filter(highest_score__gt=new_high).count() + 1
+                leaderboard.rank = rank
+                leaderboard.save(update_fields=['highest_score', 'rank'])
+            else:
+                rank = leaderboard.rank
         return Response({
             'message': 'Score saved successfully.',
-            'total_score': request.user.total_score,
+            'total_score': getattr(request.user, 'total_score', 0),
             'best_score': leaderboard.highest_score,
             'rank': rank,
         })

@@ -29,7 +29,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pip-audit
-        pip-audit --progress=line || true
+        pip-audit || true
     - name: Run Tests
       run: |
         python manage.py test

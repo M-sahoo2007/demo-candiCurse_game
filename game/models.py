@@ -17,6 +17,10 @@ class GameScore(models.Model):
 
     class Meta:
         ordering = ['-score', '-created_at']
+        indexes = [
+            models.Index(fields=['user'], name='gamescore_user_idx'),
+            models.Index(fields=['score'], name='gamescore_score_idx'),
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.score} pts'

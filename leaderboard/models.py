@@ -10,6 +10,9 @@ class Leaderboard(models.Model):
 
     class Meta:
         ordering = ['-highest_score']
+        indexes = [
+            models.Index(fields=['highest_score'], name='leaderboard_highest_score_idx'),
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.highest_score}'

@@ -11,8 +11,12 @@ def leaderboard_view(request):
     User = get_user_model()
 
     # Ensure every registered user has an associated leaderboard entry.
-    for user in User.objects.all():
-        Leaderboard.objects.get_or_create(user=user, defaults={'highest_score': 0, 'rank': 0})
+    # Create missing leaderboard records in bulk to avoid N+1 queries.
+    existing_user_ids = set(Leaderboard.objects.values_list('user_id', flat=True))
+    missing_users = User.objects.exclude(id__in=existing_user_ids)
+    to_create = [Leaderboard(user=u, highest_score=0, rank=0) for u in missing_users]
+    if to_create:
+        Leaderboard.objects.bulk_create(to_create)
 
     leaders = Leaderboard.objects.select_related('user').order_by('-highest_score', 'user__username')[:20]
     user_ids = [leader.user_id for leader in leaders]
@@ -22,6 +26,7 @@ def leaderboard_view(request):
     }
 
     leaderboard_rows = []
+    to_update = []
     for rank, record in enumerate(leaders, start=1):
         leaderboard_rows.append({
             'rank': rank,
@@ -35,6 +40,10 @@ def leaderboard_view(request):
         })
         if record.rank != rank:
             record.rank = rank
-            record.save(update_fields=['rank'])
+            to_update.append(record)
+
+    # Bulk update changed ranks to reduce number of writes.
+    if to_update:
+        Leaderboard.objects.bulk_update(to_update, ['rank'])
 
     return render(request, 'leaderboard.html', {'leaders': leaderboard_rows})
